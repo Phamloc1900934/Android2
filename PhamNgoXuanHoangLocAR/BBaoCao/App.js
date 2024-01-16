@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Header from './src/Header';
-import Body from './src/Body';
+// import Body from './src/Body';
 import Footer from './src/Footer';
 
 export default function App() {
@@ -12,8 +12,8 @@ export default function App() {
   }
   return (
     <View style={styles.container}>
-      <Header title="My App" />
-      <Body activeScreen={activeScreen} />
+      <Header/>
+      {/* <Body activeScreen={activeScreen} /> */}
       <Footer setScreen={setScreen} />
     </View>
   );

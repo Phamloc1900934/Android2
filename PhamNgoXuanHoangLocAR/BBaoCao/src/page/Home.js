@@ -4,31 +4,15 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from 'react
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import detailProduct from './detailproduct';
-import { useNavigation } from '@react-navigation/native';
-import AppNavigator from './AppNavigator';
-
+import { useNavigation, NavigationContainer  } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import StarRating from './StarRating';
+// import StarRating from './path/to/StarRating';
 const pageSize = 5; // Number of items per page
 
-const StarRating = ({ rating }) => {
-    const fullStars = Math.floor(rating);
-    const halfStars = rating % 1 > 0 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStars;
+const Stack = createNativeStackNavigator();
 
-    return (
-        <View style={{ flexDirection: 'row' }}>
-            {Array(fullStars).fill().map((_, index) => (
-                <Icon key={`full-${index}`} name="star" color="gold" size={16} />
-            ))}
-            {halfStars > 0 && <Icon name="star-half" color="gold" size={16} />}
-            {Array(emptyStars).fill().map((_, index) => (
-                <Icon key={`empty-${index}`} name="star-o" color="gold" size={16} />
-            ))}
-        </View>
-    );
-};
-
-export default function Home() {
-    const navigation = useNavigation();
+const ProductListScreen = ({ navigation }) => {
     // product
     const [productData, setProductData] = useState([]);
     const [displayData, setDisplayData] = useState([]);
@@ -37,6 +21,10 @@ export default function Home() {
     // category 
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All');
+
+    const navigateToDetailProduct = (navigation, item) => {
+        navigation.navigate('Chi tiết sản phẩm', { product: item });
+      };
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -89,7 +77,7 @@ export default function Home() {
     const renderProduct = ({ item }) => (
         <TouchableOpacity
             style={styles.productContainer}
-            onPress={() => navigation.navigate('detailProduct', { product: item })}
+            onPress={() => navigateToDetailProduct(navigation, item)}
         >
             <View style={styles.productContainer}>
                 <View style={styles.imageContainer}>
@@ -102,7 +90,7 @@ export default function Home() {
                     <Text style={styles.descriptionText}>
                         Description: {truncateDescription(item.description)}
                     </Text>
-                    <StarRating rating={item.rating.rate} />
+                    <StarRating styles = {{ flexDirection: 'row' }} rating={item.rating.rate} />
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.button}>
                             <Text style={styles.buttonText}>Add to Cart</Text>
@@ -145,6 +133,17 @@ export default function Home() {
             />
         </View>
     );
+};
+
+export default function Home() {
+    return (
+        <NavigationContainer independent={true}>
+          <Stack.Navigator>
+            <Stack.Screen name="ProductList" component={ProductListScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Chi tiết sản phẩm" component={detailProduct} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      );
 }
 
 const styles = StyleSheet.create({
@@ -181,7 +180,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 10,
         margin: 5,
-        shadowColor: '#000',
+        shadowColor: 'white',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 1,
