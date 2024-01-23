@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import StarRating from './StarRating';
+import addToCart from './addToCart';
 
 export default function detailProduct({ route }) {
     const { product } = route.params;
@@ -42,7 +43,7 @@ export default function detailProduct({ route }) {
                 <TouchableOpacity onPress={handleBuyNow} style={styles.buyButton}>
                     <Text style={styles.buttonText}>Buy Now</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleAddToCart} style={styles.cartButton}>
+                <TouchableOpacity  onPress={() => addToCart(product)} style={styles.cartButton}>
                     <Text style={styles.buttonText}>Add to Cart</Text>
                 </TouchableOpacity>
             </View>

@@ -3,13 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
+import LoginScreen from './Login';
 import Home from './page/Home';
 import Setting from './page/Setting';
-import Page1 from './page/page1';
-import Page2 from './page/page2';
+import Cart from './page/Cart';
 const Tab = createBottomTabNavigator();
-
+const Stack = createStackNavigator();
 const Footer = () => {
   return (
     <NavigationContainer>
@@ -21,11 +20,9 @@ const Footer = () => {
             if (route.name === 'Home') {
               iconName = 'home';
             } else if (route.name === 'Setting') {
-              iconName = 'cog';
-            } else if (route.name === 'Page1') {
-              iconName = 'plus';
-            } else if (route.name === 'Page2') {
-              iconName = 'plus';
+              iconName = 'wrench';
+            } else if (route.name === 'Cart') {
+              iconName = 'cart-plus';
             }
             return <FontAwesome5 name={iconName} size={focused ? 25 : 20} color={color} />;
           },
@@ -41,8 +38,7 @@ const Footer = () => {
         }}
       >
         <Tab.Screen name="Home" component={Home}/>
-        <Tab.Screen name="Page1" component={Page1} />
-        <Tab.Screen name="Page2" component={Page2} />
+        <Tab.Screen name="Cart" component={Cart} />
         <Tab.Screen name="Setting" component={Setting} />
       </Tab.Navigator>
     </NavigationContainer>

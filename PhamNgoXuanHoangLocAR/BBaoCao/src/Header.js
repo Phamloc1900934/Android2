@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native';
-
+import { itemProduct } from './page/itemProduct';
 // Header Component với SearchBar
 const Header = ({ onSearch }) => {
   const [search, setSearch] = useState('');
-
+  
   const updateSearch = (query) => {
     setSearch(query);
     onSearch(query);
@@ -15,7 +15,7 @@ const Header = ({ onSearch }) => {
   return (
     <View style={styles.header}>
       <SearchBar
-        placeholder="Tìm kiếm..."
+        placeholder="Search..."
         onChangeText={updateSearch}
         value={search}
         containerStyle={styles.searchBarContainer}
@@ -25,10 +25,16 @@ const Header = ({ onSearch }) => {
   );
 };
 
-const ProductsScreen = () => {
+const ProductsScreen = ({navigation}) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [search, setSearch] = useState('');
+
+  const { updateItem } = useContext(itemProduct);
+
+  const handleClick = (itemm) => {
+    updateItem(itemm)
+  };
 
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
@@ -61,7 +67,7 @@ const ProductsScreen = () => {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Chi tiết sản phẩm', { product: item })}
+              onPress={() => handleClick(item)}
             >
               <View style={styles.productItem}>
                 <Text style={styles.productTitle}>{item.title}</Text>
@@ -70,7 +76,7 @@ const ProductsScreen = () => {
             </TouchableOpacity>
           )}
           style={styles.list} // Điều chỉnh kích thước của FlatList nếu cần
-          ListEmptyComponent={<Text style={styles.noResults}>Không tìm thấy sản phẩm.</Text>} // Thông báo khi không có kết quả
+          ListEmptyComponent={<Text style={styles.noResults}>Not found...</Text>} // Thông báo khi không có kết quả
         />
       ) : null}
     </View>
