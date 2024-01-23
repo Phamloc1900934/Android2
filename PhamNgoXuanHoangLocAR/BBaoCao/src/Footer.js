@@ -7,6 +7,8 @@ import LoginScreen from './Login';
 import Home from './page/Home';
 import Setting from './page/Setting';
 import Cart from './page/Cart';
+import PaymentScreen from './page/PaymentScreen';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const Footer = () => {
@@ -40,6 +42,7 @@ const Footer = () => {
         <Tab.Screen name="Home" component={Home}/>
         <Tab.Screen name="Cart" component={Cart} />
         <Tab.Screen name="Setting" component={Setting} />
+        <Tab.Screen name="PaymentScreen" component={PaymentScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

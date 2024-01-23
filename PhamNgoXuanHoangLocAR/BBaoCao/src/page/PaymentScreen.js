@@ -1,41 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
-const PaymentScreen = () => {
+import { Button } from 'react-native';
+const PaymentScreen = ({ route }) => {
+    const { cartItems } = route.params;
     const [userInfo, setUserInfo] = useState(null);
-    const [cartItems, setCartItems] = useState([]);
 
     useEffect(() => {
-        const fetchPaymentAndUserInfo = async () => {
+        const savePaymentInfo = async () => {
             try {
-                // Truy xuất thông tin thanh toán từ AsyncStorage
-                const paymentInfoString = await AsyncStorage.getItem('paymentInfo');
-                if (paymentInfoString) {
-                    const paymentInfo = JSON.parse(paymentInfoString);
-                    setUserInfo(paymentInfo.userInfo);
-                    setCartItems(paymentInfo.cartItems || []);
-                } else {
-                    console.log('No payment info found');
-                }
+                // Lưu thông tin giỏ hàng và thông tin người dùng vào AsyncStorage dưới key 'paymentInfo'
+                await AsyncStorage.setItem('paymentInfo', JSON.stringify({ cartItems, userInfo }));
             } catch (error) {
-                console.error('Error fetching payment and user info:', error);
+                console.error('Error saving payment info:', error);
             }
         };
 
-        fetchPaymentAndUserInfo();
+        if (userInfo && cartItems.length > 0) {
+            savePaymentInfo();
+        }
+    }, [userInfo, cartItems]);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const storedCredentials = await AsyncStorage.getItem('userInfo');
+                const { username, password } = storedCredentials ? JSON.parse(storedCredentials) : {};
+
+                if (!username || !password) {
+                    console.log('No login info found');
+                    return;
+                }
+
+                const response = await axios.get('https://fakestoreapi.com/users');
+                const userMatch = response.data.find(user => user.username === username && user.password === password);
+
+                if (userMatch) {
+                    // Loại bỏ password và username từ thông tin được hiển thị
+                    const { password, username, ...restUserInfo } = userMatch;
+                    setUserInfo(restUserInfo);
+                } else {
+                    console.log('No matching user found');
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+
+        fetchUserInfo();
     }, []);
+
 
     const handleConfirmReceived = async () => {
         try {
+            // Xóa thông tin thanh toán khỏi AsyncStorage
             await AsyncStorage.removeItem('paymentInfo');
+            // Thêm bất kỳ hành động nào ở đây, ví dụ: thông báo hoặc chuyển hướng người dùng
             alert('Đã xác nhận nhận hàng!');
-            // Sau khi xác nhận, bạn có thể chuyển hướng người dùng hoặc cập nhật UI
         } catch (error) {
             console.error('Error removing payment info:', error);
         }
     };
+
 
     return (
         <ScrollView style={styles.container}>
@@ -60,7 +87,6 @@ const PaymentScreen = () => {
         </ScrollView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -77,7 +103,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#cccccc',
     },
-    // Các styles khác nếu cần
+    // Thêm styles khác nếu cần
 });
 
 export default PaymentScreen;

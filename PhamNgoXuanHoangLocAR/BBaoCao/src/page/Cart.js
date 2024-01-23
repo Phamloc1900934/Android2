@@ -16,6 +16,10 @@ export default function Cart({ navigation }) {
         loadCartItems();
     }, []);
 
+    const navigateToPayment = () => {
+        navigation.navigate('PaymentScreen', { items });
+    };
+
     const loadCartItems = async () => {
         try {
             const cartData = await AsyncStorage.getItem('cartItems');
@@ -136,6 +140,20 @@ export default function Cart({ navigation }) {
                 <View style={styles.totalContainer}>
                     <Text style={styles.totalText}>Total Price: ${totalPrice.toFixed(2)}</Text>
                 </View>
+                <TouchableOpacity
+  style={styles.checkoutButton}
+  onPress={async () => {
+    // Truyền thông tin giỏ hàng và chuyển đến trang thanh toán
+    navigation.navigate('PaymentScreen', { cartItems: items });
+    // Xóa thông tin giỏ hàng khỏi AsyncStorage
+    await AsyncStorage.removeItem('cartItems');
+    // Cập nhật trạng thái giỏ hàng để hiển thị giỏ hàng trống
+    setItems([]);
+  }}
+>
+  <Text style={styles.checkoutButtonText}>Thanh Toán</Text>
+</TouchableOpacity>
+
             </ScrollView>
         </SafeAreaView>
     );
@@ -281,5 +299,15 @@ const styles = StyleSheet.create({
     discountPriceText: {
         fontWeight: 'bold',
         color: '#E53935',
-    },
+    },checkoutButton: {
+        backgroundColor: '#007bff',
+        padding: 10,
+        borderRadius: 5,
+        marginVertical: 20,
+      },
+      checkoutButtonText: {
+        color: '#fff',
+        textAlign: 'center',
+        fontSize: 16,
+      },
 });
